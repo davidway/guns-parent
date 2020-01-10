@@ -15,10 +15,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
  */
 @Controller
 @RequestMapping("/hello")
-public class ExampleController {
+public class  ExampleController {
 
     @RequestMapping("")
-    public ResponseEntity hello(@RequestBody SimpleObject simpleObject) {
+    public ResponseEntity hello() {
         System.out.println(CurrentUser.getCurrentUser());
         return ResponseEntity.ok("请求成功!");
     }
