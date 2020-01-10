@@ -1,5 +1,6 @@
 package com.stylefeng.guns.rest.modular.example;
 
+import com.stylefeng.guns.rest.common.CurrentUser;
 import com.stylefeng.guns.rest.common.SimpleObject;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -18,7 +19,7 @@ public class ExampleController {
 
     @RequestMapping("")
     public ResponseEntity hello(@RequestBody SimpleObject simpleObject) {
-        System.out.println(simpleObject.getUser());
+        System.out.println(CurrentUser.getCurrentUser());
         return ResponseEntity.ok("请求成功!");
     }
 }

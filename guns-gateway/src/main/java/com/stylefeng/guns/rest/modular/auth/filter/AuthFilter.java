@@ -2,6 +2,7 @@ package com.stylefeng.guns.rest.modular.auth.filter;
 
 import com.stylefeng.guns.core.base.tips.ErrorTip;
 import com.stylefeng.guns.core.util.RenderUtil;
+import com.stylefeng.guns.rest.common.CurrentUser;
 import com.stylefeng.guns.rest.common.exception.BizExceptionEnum;
 import com.stylefeng.guns.rest.config.properties.JwtProperties;
 import com.stylefeng.guns.rest.modular.auth.util.JwtTokenUtil;
@@ -39,11 +40,26 @@ public class AuthFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
+        //配置忽略列表
+        String ignoreUrl = jwtProperties.getIgnoreUrl();
+        String[] ignoreUrls = ignoreUrl.split(",");
+        for(int i=0 ; i<ignoreUrls.length ; i++){
+            if (request.getServletPath().equals(ignoreUrls) ){
+                chain.doFilter(request, response);
+                return ;
+            }
+        }
+
         final String requestHeader = request.getHeader(jwtProperties.getHeader());
         String authToken = null;
         if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
             authToken = requestHeader.substring(7);
-
+            String userId = jwtTokenUtil.getUsernameFromToken(authToken);
+            if ( userId ==null){
+                return ;
+            }else{
+                CurrentUser.saveUserInfo(userId);
+            }
             //验证token是否过期,包含了验证jwt是否正确
             try {
                 boolean flag = jwtTokenUtil.isTokenExpired(authToken);
