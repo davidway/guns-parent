@@ -1,17 +1,18 @@
 package com.stylefeng.guns.api.user;
 
-
-import com.stylefeng.guns.api.user.model.UserInfoModel;
-import com.stylefeng.guns.api.user.model.UserModel;
+import com.stylefeng.guns.api.user.vo.UserInfoModel;
+import com.stylefeng.guns.api.user.vo.UserModel;
 
 public interface UserAPI {
-    int login(String username,String password);
 
-    boolean registr(UserModel userModel);
+    int login(String username, String password);
 
-    boolean checkName(String username);
+    boolean register(UserModel userModel);
+
+    boolean checkUsername(String username);
 
     UserInfoModel getUserInfo(int uuid);
 
     UserInfoModel updateUserInfo(UserInfoModel userInfoModel);
+
 }

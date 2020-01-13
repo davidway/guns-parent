@@ -6,6 +6,7 @@ import com.stylefeng.guns.rest.common.CurrentUser;
 import com.stylefeng.guns.rest.common.exception.BizExceptionEnum;
 import com.stylefeng.guns.rest.config.properties.JwtProperties;
 import com.stylefeng.guns.rest.modular.auth.util.JwtTokenUtil;
+import com.stylefeng.guns.rest.modular.vo.ResponseVO;
 import io.jsonwebtoken.JwtException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,28 +41,30 @@ public class AuthFilter extends OncePerRequestFilter {
             chain.doFilter(request, response);
             return;
         }
-        //配置忽略列表
+
+        // 配置忽略列表
         String ignoreUrl = jwtProperties.getIgnoreUrl();
         String[] ignoreUrls = ignoreUrl.split(",");
-        for(int i=0 ; i<ignoreUrls.length ; i++){
-            if (request.getServletPath().equals(ignoreUrls) ){
+        for(int i=0;i<ignoreUrls.length;i++){
+            if(request.getServletPath().startsWith(ignoreUrls[i])){
                 chain.doFilter(request, response);
-                return ;
+                return;
             }
         }
+
 
         final String requestHeader = request.getHeader(jwtProperties.getHeader());
         String authToken = null;
         if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
             authToken = requestHeader.substring(7);
+            // 通过Token获取userID，并且将之存入Threadlocal，以便后续业务调用
             String userId = jwtTokenUtil.getUsernameFromToken(authToken);
-
-
-            if ( userId ==null){
-                return ;
-            }else{
-                CurrentUser.saveUserInfo(userId);
+            if(userId == null){
+                return;
+            } else {
+                CurrentUser.saveUserId(userId);
             }
+
             //验证token是否过期,包含了验证jwt是否正确
             try {
                 boolean flag = jwtTokenUtil.isTokenExpired(authToken);
